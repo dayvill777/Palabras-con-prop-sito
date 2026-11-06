@@ -5,134 +5,57 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Palabras con propósito 💜</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(140deg,#7025ad,#a64dd2,#ed91c7);
-  min-height: 100vh;
-  padding: 25px 15px;
-  color: #43205e;
+*{box-sizing:border-box}
+body{
+margin:0;padding:25px 15px;min-height:100vh;
+font-family:Arial,sans-serif;
+background:linear-gradient(140deg,#7025ad,#a64dd2,#ed91c7);
+color:#43205e
 }
-
-.container {
-  max-width: 520px;
-  margin: 30px auto;
-  background: white;
-  border-radius: 28px;
-  padding: 28px;
-  box-shadow: 0 15px 45px #35105045;
+.container{
+max-width:520px;margin:30px auto;background:white;
+border-radius:28px;padding:28px;
+box-shadow:0 15px 45px #35105045
 }
-
-.logo {
-  color: #782bb1;
-  font-size: 25px;
-  font-weight: 900;
-  text-align: center;
+.logo{text-align:center;color:#782bb1;font-size:25px;font-weight:900}
+.heart{text-align:center;font-size:55px;margin:15px}
+h1{text-align:center;color:#7428a8;font-size:29px}
+.subtitle{text-align:center;color:#806b8c;line-height:1.6}
+label{display:block;font-weight:bold;margin:20px 0 8px}
+input,select{
+width:100%;padding:15px;border:2px solid #eadcf4;
+border-radius:13px;font-size:16px;background:#faf6fd;color:#43205e
 }
-
-.heart {
-  text-align: center;
-  font-size: 55px;
-  margin: 15px;
+button{
+width:100%;padding:17px;border:0;border-radius:15px;
+background:#782bb1;color:white;font-size:17px;
+font-weight:bold;cursor:pointer;margin-top:25px
 }
-
-h1 {
-  text-align: center;
-  color: #7428a8;
-  font-size: 29px;
+button:disabled{opacity:.6;cursor:wait}
+#message{
+display:none;text-align:center;padding:18px;margin-top:20px;
+border-radius:15px;background:#f1e5fa;line-height:1.6
 }
-
-.subtitle {
-  text-align: center;
-  color: #806b8c;
-  line-height: 1.6;
-}
-
-label {
-  display: block;
-  font-weight: bold;
-  margin: 20px 0 8px;
-}
-
-select, input {
-  width: 100%;
-  padding: 15px;
-  border: 2px solid #eadcf4;
-  border-radius: 13px;
-  font-size: 16px;
-  background: #faf6fd;
-  color: #43205e;
-}
-
-button {
-  width: 100%;
-  padding: 17px;
-  border: 0;
-  border-radius: 15px;
-  background: #782bb1;
-  color: white;
-  font-size: 17px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 25px;
-}
-
-button:disabled {
-  opacity: .6;
-  cursor: wait;
-}
-
-button:hover {
-  background: #60208f;
-}
-
-#message {
-  display: none;
-  text-align: center;
-  padding: 18px;
-  margin-top: 20px;
-  border-radius: 15px;
-  background: #f1e5fa;
-  line-height: 1.6;
-}
-
-.footer {
-  text-align: center;
-  font-size: 12px;
-  color: #a28caf;
-  margin-top: 25px;
-}
+.footer{text-align:center;font-size:12px;color:#a28caf;margin-top:25px}
 </style>
 </head>
-
 <body>
-
 <div class="container">
-
-  <div class="logo">palabras con propósito 💜</div>
-
+  <div class="logo">Palabras con propósito 💜</div>
   <div class="heart">💜✨</div>
-
   <h1>¡Regala una palabra bonita!</h1>
-
   <p class="subtitle">
-    Todos tenemos algo especial.
-    Hoy queremos descubrir esas cualidades
-    que nos hacen únicos.
+    Todos tenemos algo especial. Hoy queremos descubrir
+    esas cualidades que nos hacen únicos.
   </p>
 
   <form id="wordForm">
-
-    <label for="sender">1. ¿Quién eres?</label>
-    <select id="sender" required>
-      <option value="">Selecciona tu nombre</option>
-    </select>
+    <label for="code">1. Ingresa tu código privado</label>
+    <input id="code" type="password" maxlength="32"
+      placeholder="Escribe tu código de acceso"
+      autocomplete="off" required>
 
     <label for="receiver">2. ¿A quién quieres regalarle una palabra?</label>
     <select id="receiver" required>
@@ -140,77 +63,50 @@ button:hover {
     </select>
 
     <label for="word">3. ¿Qué palabra lo define?</label>
-    <input
-      id="word"
-      type="text"
-      maxlength="40"
+    <input id="word" type="text" maxlength="40"
       placeholder="Ej. Alegría, creatividad, nobleza..."
-      required
-    >
+      required>
 
     <button id="submitBtn" type="submit">
       Regalar una palabra 💜
     </button>
-
   </form>
 
   <div id="message" role="status"></div>
-
   <div class="footer">
     Un pequeño detalle puede dejar una gran huella. ✨
   </div>
-
 </div>
 
 <script>
 const SUPABASE_URL = "https://aocrlssxfmidacsxqfrw.supabase.co";
 const SUPABASE_KEY = "sb_publishable_bubbzmVJ7MaFQbpOMp42OA_S90qVFf7";
 
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const people = [
-  "Teban", "Ele", "Sara", "Dani", "Alejo",
-  "Cami", "Aleja", "Juanse", "Fran", "Naty",
-  "Pol", "Day", "Kathe"
+  "Teban","Ele","Sara","Dani","Alejo","Cami","Aleja",
+  "Juanse","Fran","Naty","Pol","Day","Kathe"
 ];
 
-const sender = document.getElementById("sender");
 const receiver = document.getElementById("receiver");
 const form = document.getElementById("wordForm");
 const message = document.getElementById("message");
 const button = document.getElementById("submitBtn");
 
 people.forEach(person => {
-  sender.add(new Option(person, person));
   receiver.add(new Option(person, person));
-});
-
-sender.addEventListener("change", () => {
-  receiver.value = "";
-  [...receiver.options].forEach(option => {
-    if (option.value) {
-      option.disabled = option.value === sender.value;
-    }
-  });
 });
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const from = sender.value;
+  const code = document.getElementById("code").value.trim();
   const to = receiver.value;
   const word = document.getElementById("word").value.trim();
 
-  if (!from || !to || !word) {
+  if (!code || !to || !word) {
     alert("Completa todos los campos 💜");
-    return;
-  }
-
-  if (from === to) {
-    alert("¡No puedes regalarte una palabra a ti mismo!");
     return;
   }
 
@@ -218,33 +114,23 @@ form.addEventListener("submit", async (event) => {
   button.textContent = "Enviando tu regalo...";
 
   try {
-    const { error } = await db
-      .from("palabras")
-      .insert([{
-        remitente: from,
-        destinatario: to,
-        palabra: word
-      }]);
+    const { error } = await db.rpc("regalar_palabra", {
+      p_codigo: code,
+      p_destinatario: to,
+      p_palabra: word
+    });
 
     if (error) throw error;
 
     form.reset();
-
-    [...receiver.options].forEach(option => {
-      option.disabled = false;
-    });
-
     message.textContent =
       "¡Tu palabra ha sido guardada! 💜✨ Gracias por regalar algo bonito.";
-
     message.style.display = "block";
 
   } catch (error) {
     console.error(error);
-
     message.textContent =
-      "No pudimos guardar tu palabra. Inténtalo nuevamente.";
-
+      "No pudimos guardar tu palabra. Verifica tu código e inténtalo nuevamente.";
     message.style.display = "block";
   }
 
@@ -252,6 +138,5 @@ form.addEventListener("submit", async (event) => {
   button.textContent = "Regalar una palabra 💜";
 });
 </script>
-
 </body>
 </html>
