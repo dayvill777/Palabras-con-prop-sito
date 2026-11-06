@@ -3,139 +3,206 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Palabras con propósito 💜</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box}
 body{
-margin:0;padding:25px 15px;min-height:100vh;
-font-family:Arial,sans-serif;
-background:linear-gradient(140deg,#7025ad,#a64dd2,#ed91c7);
-color:#43205e
+ margin:0;padding:24px 14px;min-height:100vh;
+ font-family:Arial,sans-serif;color:#43205e;
+ background:linear-gradient(140deg,#7025ad,#a64dd2,#ed91c7)
 }
 .container{
-max-width:520px;margin:30px auto;background:white;
-border-radius:28px;padding:28px;
-box-shadow:0 15px 45px #35105045
+ max-width:520px;margin:25px auto;background:white;
+ padding:26px;border-radius:28px;
+ box-shadow:0 15px 45px #35105045
 }
-.logo{text-align:center;color:#782bb1;font-size:25px;font-weight:900}
-.heart{text-align:center;font-size:55px;margin:15px}
-h1{text-align:center;color:#7428a8;font-size:29px}
+.logo{text-align:center;color:#782bb1;font-size:24px;font-weight:900}
+.heart{text-align:center;font-size:48px;margin:14px}
+h1{text-align:center;color:#7428a8;font-size:28px}
 .subtitle{text-align:center;color:#806b8c;line-height:1.6}
-label{display:block;font-weight:bold;margin:20px 0 8px}
-input,select{
-width:100%;padding:15px;border:2px solid #eadcf4;
-border-radius:13px;font-size:16px;background:#faf6fd;color:#43205e
-}
+.tabs{display:flex;gap:8px;margin:25px 0}
+.tabs button{margin:0;padding:13px 8px;font-size:14px}
 button{
-width:100%;padding:17px;border:0;border-radius:15px;
-background:#782bb1;color:white;font-size:17px;
-font-weight:bold;cursor:pointer;margin-top:25px
+ width:100%;padding:16px;border:0;border-radius:14px;
+ background:#782bb1;color:white;font-size:16px;
+ font-weight:bold;cursor:pointer
 }
 button:disabled{opacity:.6;cursor:wait}
-#message{
-display:none;text-align:center;padding:18px;margin-top:20px;
-border-radius:15px;background:#f1e5fa;line-height:1.6
+.tab{background:#f0e4f8;color:#7025ad}
+.tab.active{background:#782bb1;color:white}
+label{display:block;font-weight:bold;margin:18px 0 8px}
+input,select{
+ width:100%;padding:14px;border:2px solid #eadcf4;
+ border-radius:13px;font-size:16px;background:#faf6fd;color:#43205e
 }
-.footer{text-align:center;font-size:12px;color:#a28caf;margin-top:25px}
+.panel{display:none}
+.panel.active{display:block}
+.message{
+ display:none;padding:16px;margin-top:18px;border-radius:14px;
+ background:#f1e5fa;text-align:center;line-height:1.6
+}
+.word{
+ padding:17px;margin:12px 0;border-radius:16px;
+ background:#f7edff;text-align:center;color:#762bb2;
+ font-size:22px;font-weight:bold
+}
+.footer{text-align:center;color:#a28caf;font-size:12px;margin-top:24px}
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="logo">Palabras con propósito 💜</div>
-  <div class="heart">💜✨</div>
-  <h1>¡Regala una palabra bonita!</h1>
-  <p class="subtitle">
-    Todos tenemos algo especial. Hoy queremos descubrir
-    esas cualidades que nos hacen únicos.
-  </p>
+ <div class="logo">Palabras con propósito 💜</div>
+ <div class="heart">💜✨</div>
+ <h1>¡Lo bonito se comparte!</h1>
+ <p class="subtitle">
+  Todos tenemos algo especial. Hoy queremos descubrir
+  esas cualidades que nos hacen únicos.
+ </p>
 
+ <div class="tabs">
+  <button class="tab active" id="sendTab" type="button"
+   onclick="showPanel('send')">💌 Regalar</button>
+  <button class="tab" id="revealTab" type="button"
+   onclick="showPanel('reveal')">✨ Descubrir</button>
+ </div>
+
+ <section class="panel active" id="sendPanel">
+  <h2>Regala una palabra bonita</h2>
   <form id="wordForm">
-    <label for="code">1. Ingresa tu código privado</label>
-    <input id="code" type="password" maxlength="32"
-      placeholder="Escribe tu código de acceso"
-      autocomplete="off" required>
+   <label for="sendCode">Tu código privado</label>
+   <input id="sendCode" type="password" maxlength="32"
+    autocomplete="off" placeholder="Escribe tu código" required>
 
-    <label for="receiver">2. ¿A quién quieres regalarle una palabra?</label>
-    <select id="receiver" required>
-      <option value="">Selecciona a tu compañero</option>
-    </select>
+   <label for="receiver">¿A quién quieres regalarle una palabra?</label>
+   <select id="receiver" required>
+    <option value="">Selecciona a tu compañero</option>
+   </select>
 
-    <label for="word">3. ¿Qué palabra lo define?</label>
-    <input id="word" type="text" maxlength="40"
-      placeholder="Ej. Alegría, creatividad, nobleza..."
-      required>
+   <label for="word">¿Qué palabra lo define?</label>
+   <input id="word" maxlength="40"
+    placeholder="Ej. Alegría, creatividad, nobleza..." required>
 
-    <button id="submitBtn" type="submit">
-      Regalar una palabra 💜
-    </button>
+   <button id="sendButton" type="submit">Regalar una palabra 💜</button>
   </form>
+  <div class="message" id="sendMessage" role="status"></div>
+ </section>
 
-  <div id="message" role="status"></div>
-  <div class="footer">
-    Un pequeño detalle puede dejar una gran huella. ✨
-  </div>
+ <section class="panel" id="revealPanel">
+  <h2>¡Llegó tu momento especial! ✨</h2>
+  <p class="subtitle">
+   Ingresa tu código privado y descubre las palabras
+   que tus compañeros te regalaron.
+  </p>
+  <form id="revealForm">
+   <label for="revealCode">Tu código privado</label>
+   <input id="revealCode" type="password" maxlength="32"
+    autocomplete="off" placeholder="Escribe tu código" required>
+   <button id="revealButton" type="submit">
+    Descubrir mis palabras 💜
+   </button>
+  </form>
+  <div class="message" id="revealMessage" role="status"></div>
+  <div id="results"></div>
+ </section>
+
+ <div class="footer">
+  Un pequeño detalle puede dejar una gran huella. 💜
+ </div>
 </div>
 
 <script>
-const SUPABASE_URL = "https://aocrlssxfmidacsxqfrw.supabase.co";
-const SUPABASE_KEY = "sb_publishable_bubbzmVJ7MaFQbpOMp42OA_S90qVFf7";
+const SUPABASE_URL="https://aocrlssxfmidacsxqfrw.supabase.co";
+const SUPABASE_KEY="sb_publishable_bubbzmVJ7MaFQbpOMp42OA_S90qVFf7";
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-const people = [
-  "Teban","Ele","Sara","Dani","Alejo","Cami","Aleja",
-  "Juanse","Fran","Naty","Pol","Day","Kathe"
+const people=[
+ "Teban","Ele","Sara","Dani","Alejo","Cami","Aleja",
+ "Juanse","Fran","Naty","Pol","Day","Kathe"
 ];
 
-const receiver = document.getElementById("receiver");
-const form = document.getElementById("wordForm");
-const message = document.getElementById("message");
-const button = document.getElementById("submitBtn");
+const receiver=document.getElementById("receiver");
+people.forEach(person=>receiver.add(new Option(person,person)));
 
-people.forEach(person => {
-  receiver.add(new Option(person, person));
+function showPanel(panel){
+ document.getElementById("sendPanel").classList.toggle("active",panel==="send");
+ document.getElementById("revealPanel").classList.toggle("active",panel==="reveal");
+ document.getElementById("sendTab").classList.toggle("active",panel==="send");
+ document.getElementById("revealTab").classList.toggle("active",panel==="reveal");
+}
+
+function showMessage(id,text){
+ const el=document.getElementById(id);
+ el.textContent=text;
+ el.style.display="block";
+}
+
+document.getElementById("wordForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const code=document.getElementById("sendCode").value.trim();
+ const to=receiver.value;
+ const word=document.getElementById("word").value.trim();
+ const button=document.getElementById("sendButton");
+ button.disabled=true;
+ button.textContent="Enviando tu regalo...";
+ document.getElementById("sendMessage").style.display="none";
+
+ try{
+  const {error}=await db.rpc("regalar_palabra",{
+   p_codigo:code,
+   p_destinatario:to,
+   p_palabra:word
+  });
+  if(error)throw error;
+  e.target.reset();
+  showMessage("sendMessage","¡Tu palabra ha sido guardada! 💜✨ Gracias por regalar algo bonito.");
+ }catch(error){
+  console.error(error);
+  showMessage("sendMessage","No pudimos guardar tu palabra. Verifica tu código e inténtalo nuevamente.");
+ }
+ button.disabled=false;
+ button.textContent="Regalar una palabra 💜";
 });
 
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
+document.getElementById("revealForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const code=document.getElementById("revealCode").value.trim();
+ const button=document.getElementById("revealButton");
+ const results=document.getElementById("results");
+ button.disabled=true;
+ button.textContent="Buscando tus palabras...";
+ results.innerHTML="";
+ document.getElementById("revealMessage").style.display="none";
 
-  const code = document.getElementById("code").value.trim();
-  const to = receiver.value;
-  const word = document.getElementById("word").value.trim();
+ try{
+  const {data,error}=await db.rpc("ver_mis_palabras",{
+   p_codigo:code
+  });
+  if(error)throw error;
 
-  if (!code || !to || !word) {
-    alert("Completa todos los campos 💜");
-    return;
+  document.getElementById("revealCode").value="";
+  if(!data || data.length===0){
+   showMessage("revealMessage","Todavía no has recibido palabras. 💜");
+  }else{
+   showMessage("revealMessage","¡Estas son las palabras que te regalaron! 💜");
+   data.forEach(item=>{
+    const card=document.createElement("div");
+    card.className="word";
+    card.textContent=item.palabra+" ✨";
+    results.appendChild(card);
+   });
   }
-
-  button.disabled = true;
-  button.textContent = "Enviando tu regalo...";
-
-  try {
-    const { error } = await db.rpc("regalar_palabra", {
-      p_codigo: code,
-      p_destinatario: to,
-      p_palabra: word
-    });
-
-    if (error) throw error;
-
-    form.reset();
-    message.textContent =
-      "¡Tu palabra ha sido guardada! 💜✨ Gracias por regalar algo bonito.";
-    message.style.display = "block";
-
-  } catch (error) {
-    console.error(error);
-    message.textContent =
-      "No pudimos guardar tu palabra. Verifica tu código e inténtalo nuevamente.";
-    message.style.display = "block";
-  }
-
-  button.disabled = false;
-  button.textContent = "Regalar una palabra 💜";
+ }catch(error){
+  console.error(error);
+  showMessage("revealMessage",
+   error.message && error.message.includes("todavía")
+   ?"¡Un poquito de paciencia! La revelación todavía no está habilitada. 💜"
+   :"No pudimos consultar tus palabras. Verifica tu código e inténtalo nuevamente."
+  );
+ }
+ button.disabled=false;
+ button.textContent="Descubrir mis palabras 💜";
 });
 </script>
 </body>
